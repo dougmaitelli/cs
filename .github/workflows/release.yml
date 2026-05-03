@@ -1,0 +1,99 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG_NAME="${GITHUB_REF#refs/tags/}"
+          gh release create "$TAG_NAME" \
+            --title "$TAG_NAME" \
+            --generate-notes
+
+  build:
+    name: Build release binary (${{ matrix.target }})
+    needs: create-release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            asset_name: x86_64-linux
+          - target: x86_64-apple-darwin
+            os: macos-latest
+            asset_name: x86_64-darwin
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            asset_name: aarch64-darwin
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            asset_name: x86_64-windows
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+          target: ${{ matrix.target }}
+
+      - name: Build release binary
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Upload binary as release asset
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG_NAME="${GITHUB_REF#refs/tags/}"
+          BINARY="cs-${{ matrix.asset_name }}"
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            BINARY="${BINARY}.exe"
+            cp "target/${{ matrix.target }}/release/cs.exe" "$BINARY"
+          else
+            cp "target/${{ matrix.target }}/release/cs" "$BINARY"
+          fi
+          gh release upload "$TAG_NAME" "$BINARY" --clobber
+
+  build-linux-arm64:
+    name: Build release binary (aarch64-unknown-linux-gnu)
+    needs: create-release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install cross
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cross
+
+      - name: Build release binary
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: cross build --release --target aarch64-unknown-linux-gnu
+
+      - name: Upload binary as release asset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG_NAME="${GITHUB_REF#refs/tags/}"
+          cp target/aarch64-unknown-linux-gnu/release/cs "cs-aarch64-linux"
+          gh release upload "$TAG_NAME" "cs-aarch64-linux" --clobber

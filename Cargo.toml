@@ -1,0 +1,21 @@
+[package]
+name = "cs"
+edition = "2021"
+description = "CLI snippet manager"
+
+[[bin]]
+name = "cs"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+strum = { version = "0.26", features = ["derive"] }
+toml = "0.8"
+dirs = "5"
+dialoguer = "0.11"
+rustyline = "14"
+console = "0.15"
+
+[dev-dependencies]
+serde_json = "1"
