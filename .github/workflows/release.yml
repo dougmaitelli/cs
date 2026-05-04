@@ -97,3 +97,26 @@ jobs:
           TAG_NAME="${GITHUB_REF#refs/tags/}"
           cp target/aarch64-unknown-linux-gnu/release/cs "cs-aarch64-linux"
           gh release upload "$TAG_NAME" "cs-aarch64-linux" --clobber
+
+  update-demo:
+    name: Update demo.gif
+    needs: create-release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: charmbracelet/vhs-action@v2
+        with:
+          path: 'demo.tape'
+          install-fonts: true
+
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          commit_message: Update demo.gif
+          branch: main
+          commit_user_name: vhs-action
+          commit_user_email: actions@github.com
+          commit_author: vhs-action <actions@github.com>
+          file_pattern: '*.gif'
