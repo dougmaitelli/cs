@@ -116,7 +116,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           commit_message: Update demo.gif
-          branch: main
+          branch: master
           commit_user_name: vhs-action
           commit_user_email: actions@github.com
           commit_author: vhs-action <actions@github.com>
