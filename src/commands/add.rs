@@ -1,5 +1,5 @@
-use crate::snippet::{Os, Snippet};
 use crate::selector;
+use crate::snippet::{Os, Snippet};
 use crate::storage;
 use crate::utils::icons::{EMOJI_ADD, EMOJI_SUCCESS};
 use crate::utils::os_detect;
@@ -44,7 +44,8 @@ pub(crate) fn run() -> Result<(), String> {
     let default_idx = Os::iter().position(|o| o == current_os).unwrap_or(0);
 
     let os_strings: Vec<String> = os_options.iter().map(|s| s.to_string()).collect();
-    let os_idx = selector::select_strings_with_dialoguer(&os_strings, "OS", default_idx).ok_or("No OS available")?;
+    let os_idx = selector::select_strings_with_dialoguer(&os_strings, "OS", default_idx)
+        .ok_or("No OS available")?;
     let os = Os::iter().nth(os_idx).ok_or("No OS available")?;
 
     let target = storage::select_target_file()?;

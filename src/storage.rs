@@ -238,7 +238,10 @@ fn sort_snippets(snippets: &mut [Snippet]) {
     });
 }
 
-pub(crate) fn filter_snippets(query: &str, all_os: bool) -> Result<Option<Vec<(usize, Snippet)>>, String> {
+pub(crate) fn filter_snippets(
+    query: &str,
+    all_os: bool,
+) -> Result<Option<Vec<(usize, Snippet)>>, String> {
     let current_os = crate::utils::os_detect::detect_os();
     let snippets = load_snippets();
 

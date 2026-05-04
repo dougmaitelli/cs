@@ -56,7 +56,11 @@ fn select_strings_with_fzf(items: &[String]) -> Option<String> {
     }
 }
 
-pub(crate) fn select_strings_with_dialoguer(items: &[String], prompt: &str, default_idx: usize) -> Option<usize> {
+pub(crate) fn select_strings_with_dialoguer(
+    items: &[String],
+    prompt: &str,
+    default_idx: usize,
+) -> Option<usize> {
     let display_items: Vec<&str> = items
         .iter()
         .take(DIALOGUER_MAX_ITEMS)
@@ -86,7 +90,7 @@ fn select_snippet_with_fzf(snippets: &[Snippet]) -> Option<usize> {
 }
 
 fn select_snippet_with_dialoguer(snippets: &[Snippet]) -> Option<usize> {
-    let items:  Vec<String> = format::format_rows(snippets);
+    let items: Vec<String> = format::format_rows(snippets);
     select_strings_with_dialoguer(&items, "Select a snippet", 0)
 }
 
