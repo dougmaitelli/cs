@@ -45,8 +45,8 @@ pub(crate) fn run() -> Result<(), String> {
 
     let os_strings: Vec<String> = os_options.iter().map(|s| s.to_string()).collect();
     let os_idx = selector::select_strings_with_dialoguer(&os_strings, "OS", default_idx)
-        .ok_or("No OS available")?;
-    let os = Os::iter().nth(os_idx).ok_or("No OS available")?;
+        .ok_or("Failed to select OS")?;
+    let os = Os::iter().nth(os_idx).ok_or("Failed to select OS")?;
 
     let target = storage::select_target_file()?;
 
