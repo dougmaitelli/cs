@@ -3,13 +3,17 @@ Output demo.gif
 Require cs
 
 Set Shell "bash"
+Set FontFamily "FiraCode Nerd Font Mono"
 Set FontSize 18
 Set Width 1400
 Set Height 800
 
 Hide
 Env XDG_CONFIG_HOME "/tmp/demo"
-Type "alias cs='./target/release/cs'" Enter
+Type "alias cs='./target/release/cs'"
+Enter
+Type "clear"
+Enter
 Show
 
 #------------------------------------------------------------------------------
