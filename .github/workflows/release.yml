@@ -105,34 +105,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg chromium-browser
-
-      - name: Install ttyd
-        run: |
-          TTYD_VERSION="1.7.7"
-          wget -qO /usr/local/bin/ttyd "https://github.com/tsl0922/ttyd/releases/download/${TTYD_VERSION}/ttyd.x86_64"
-          chmod +x /usr/local/bin/ttyd
-
-      - name: Install vhs
-        run: |
-          VHS_VERSION="0.11.0"
-          wget -qO /tmp/vhs.deb "https://github.com/charmbracelet/vhs/releases/download/${VHS_VERSION}/vhs_${VHS_VERSION}_linux_amd64.deb"
-          sudo dpkg -i /tmp/vhs.deb
-
-      - name: Install nerd fonts
-        run: |
-          mkdir -p ~/.local/share/fonts
-          wget -qO - https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/FiraCode.zip | unzip -q -d ~/.local/share/fonts/
-          fc-cache -fv
-
       - name: Build release binary
         run: cargo build --release
 
       - name: Generate demo.gif
-        run: vhs demo.tape
+        run: docker run --rm -v $PWD:/vhs ghcr.io/charmbracelet/vhs:latest demo.tape
 
       - uses: stefanzweifel/git-auto-commit-action@v5
         env:
