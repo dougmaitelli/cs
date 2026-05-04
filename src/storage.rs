@@ -254,7 +254,7 @@ pub fn filter_snippets(query: &str, all_os: bool) -> Result<Option<Vec<(usize, S
         return Ok(None);
     }
 
-    let filtered: Vec<_> = snippets
+    let filtered: Vec<(usize, Snippet)> = snippets
         .iter()
         .enumerate()
         .filter(|(_, s)| {

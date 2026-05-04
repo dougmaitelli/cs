@@ -1,6 +1,6 @@
 use crate::snippet::Snippet;
 use crate::utils::format;
-use dialoguer::{theme::ColorfulTheme, Select};
+use dialoguer::{theme::ColorfulTheme, FuzzySelect};
 use std::io::Write;
 use std::process::{Command, Stdio};
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -56,21 +56,21 @@ fn select_strings_with_fzf(items: &[String]) -> Option<String> {
     }
 }
 
-fn select_strings_with_dialoguer(items: &[String], prompt: &str) -> Option<String> {
+fn select_strings_with_dialoguer(items: &[String], prompt: &str) -> Option<usize> {
     let display_items: Vec<&str> = items
         .iter()
         .take(DIALOGUER_MAX_ITEMS)
         .map(|s| s.as_str())
         .collect();
-    let idx = Select::with_theme(&ColorfulTheme::default())
+
+    FuzzySelect::with_theme(&ColorfulTheme::default())
         .with_prompt(prompt)
+        .highlight_matches(false)
         .items(&display_items)
         .default(0)
         .interact_opt()
         .ok()
-        .flatten()?;
-
-    Some(items[idx].clone())
+        .flatten()
 }
 
 fn select_snippet_with_fzf(snippets: &[Snippet]) -> Option<usize> {
@@ -86,16 +86,16 @@ fn select_snippet_with_fzf(snippets: &[Snippet]) -> Option<usize> {
 }
 
 fn select_snippet_with_dialoguer(snippets: &[Snippet]) -> Option<usize> {
-    let items: Vec<String> = format::format_rows(snippets);
-    let selected = select_strings_with_dialoguer(&items, "Select a snippet")?;
-    selected.parse().ok()
+    let items:  Vec<String> = format::format_rows(snippets);
+    select_strings_with_dialoguer(&items, "Select a snippet")
 }
 
 pub fn select_strings(items: &[String]) -> Option<String> {
     if use_fzf() {
         select_strings_with_fzf(items)
     } else {
-        select_strings_with_dialoguer(items, "Select a command")
+        let idx = select_strings_with_dialoguer(items, "Select a command")?;
+        Some(items[idx].clone())
     }
 }
 
