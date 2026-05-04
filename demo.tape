@@ -1,7 +1,5 @@
 Output demo.gif
 
-Require cs
-
 Set Shell "bash"
 Set FontFamily "FiraCode Nerd Font Mono"
 Set FontSize 18
