@@ -30,7 +30,7 @@ fn column_widths(snippets: &[Snippet]) -> (usize, usize, usize) {
     (cmd_width, desc_width, tags_width)
 }
 
-pub fn print_header(snippets: &[Snippet], indent: &str) {
+pub(crate) fn print_header(snippets: &[Snippet], indent: &str) {
     let (cmd_width, desc_width, tags_width) = column_widths(snippets);
 
     println!(
@@ -80,7 +80,7 @@ fn format_row(snippet: &Snippet, cmd_width: usize, desc_width: usize, tags_width
     )
 }
 
-pub fn format_rows(snippets: &[Snippet]) -> Vec<String> {
+pub(crate) fn format_rows(snippets: &[Snippet]) -> Vec<String> {
     let (cmd_width, desc_width, tags_width) = column_widths(snippets);
 
     snippets
@@ -89,7 +89,7 @@ pub fn format_rows(snippets: &[Snippet]) -> Vec<String> {
         .collect()
 }
 
-pub fn print_snippet(snippet: &Snippet) {
+pub(crate) fn print_snippet(snippet: &Snippet) {
     println!(
         "   {}  {}",
         style("Command:").dim(),

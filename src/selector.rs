@@ -9,7 +9,7 @@ static NO_FZF: AtomicBool = AtomicBool::new(false);
 
 const DIALOGUER_MAX_ITEMS: usize = 100;
 
-pub fn set_no_fzf(value: bool) {
+pub(crate) fn set_no_fzf(value: bool) {
     NO_FZF.store(value, Ordering::Relaxed);
 }
 
@@ -56,7 +56,7 @@ fn select_strings_with_fzf(items: &[String]) -> Option<String> {
     }
 }
 
-fn select_strings_with_dialoguer(items: &[String], prompt: &str) -> Option<usize> {
+pub(crate) fn select_strings_with_dialoguer(items: &[String], prompt: &str, default_idx: usize) -> Option<usize> {
     let display_items: Vec<&str> = items
         .iter()
         .take(DIALOGUER_MAX_ITEMS)
@@ -67,7 +67,7 @@ fn select_strings_with_dialoguer(items: &[String], prompt: &str) -> Option<usize
         .with_prompt(prompt)
         .highlight_matches(false)
         .items(&display_items)
-        .default(0)
+        .default(default_idx)
         .interact_opt()
         .ok()
         .flatten()
@@ -87,19 +87,19 @@ fn select_snippet_with_fzf(snippets: &[Snippet]) -> Option<usize> {
 
 fn select_snippet_with_dialoguer(snippets: &[Snippet]) -> Option<usize> {
     let items:  Vec<String> = format::format_rows(snippets);
-    select_strings_with_dialoguer(&items, "Select a snippet")
+    select_strings_with_dialoguer(&items, "Select a snippet", 0)
 }
 
-pub fn select_strings(items: &[String]) -> Option<String> {
+pub(crate) fn select_strings(items: &[String]) -> Option<String> {
     if use_fzf() {
         select_strings_with_fzf(items)
     } else {
-        let idx = select_strings_with_dialoguer(items, "Select a command")?;
+        let idx = select_strings_with_dialoguer(items, "Select a command", 0)?;
         Some(items[idx].clone())
     }
 }
 
-pub fn select_snippet(snippets: &[Snippet]) -> Option<usize> {
+pub(crate) fn select_snippet(snippets: &[Snippet]) -> Option<usize> {
     if use_fzf() {
         select_snippet_with_fzf(snippets)
     } else {

@@ -4,7 +4,7 @@ use crate::utils::icons::{EMOJI_EMPTY, EMOJI_LIST, EMOJI_NOT_FOUND};
 use crate::utils::os_detect;
 use console::style;
 
-pub fn run(all_os: bool) -> Result<(), String> {
+pub(crate) fn run(all_os: bool) -> Result<(), String> {
     let current_os = os_detect::detect_os();
     let snippets = storage::load_snippets();
 

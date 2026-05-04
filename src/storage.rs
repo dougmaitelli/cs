@@ -32,7 +32,7 @@ struct IncludeFile {
 
 static STORE: OnceLock<SnippetFile> = OnceLock::new();
 
-pub fn config_path() -> PathBuf {
+pub(crate) fn config_path() -> PathBuf {
     std::env::var("XDG_CONFIG_HOME")
         .map(PathBuf::from)
         .unwrap_or_else(|_| {
@@ -98,7 +98,7 @@ fn load_snippets_from_file(path: &PathBuf) -> Result<Vec<Snippet>, String> {
     Ok(snippets)
 }
 
-pub fn init_store(path: &PathBuf) -> Result<(), String> {
+pub(crate) fn init_store(path: &PathBuf) -> Result<(), String> {
     let config = load_config_from_file(path);
     let base_dir = config_dir_for_path(path);
     let mut snippets = load_snippets_from_file(path)?;
@@ -118,18 +118,18 @@ pub fn init_store(path: &PathBuf) -> Result<(), String> {
     Ok(())
 }
 
-pub fn use_nerd_fonts() -> bool {
+pub(crate) fn use_nerd_fonts() -> bool {
     STORE.get().map(|s| s.config.nerd_fonts).unwrap_or_default()
 }
 
-pub fn load_snippets() -> &'static [Snippet] {
+pub(crate) fn load_snippets() -> &'static [Snippet] {
     STORE
         .get()
         .map(|s| s.snippet.as_slice())
         .unwrap_or_default()
 }
 
-pub fn add_snippet(snippet: Snippet, target: PathBuf) -> Result<(), String> {
+pub(crate) fn add_snippet(snippet: Snippet, target: PathBuf) -> Result<(), String> {
     let snippets = load_snippets().to_vec();
     let mut new_snippet = snippet;
 
@@ -140,7 +140,7 @@ pub fn add_snippet(snippet: Snippet, target: PathBuf) -> Result<(), String> {
     save_snippets(&all_snippets)
 }
 
-pub fn delete_snippet(snippets: &[Snippet], index: usize) -> Result<(), String> {
+pub(crate) fn delete_snippet(snippets: &[Snippet], index: usize) -> Result<(), String> {
     let mut all_snippets = snippets.to_vec();
     all_snippets.remove(index);
 
@@ -200,7 +200,7 @@ fn available_files() -> Vec<PathBuf> {
     files
 }
 
-pub fn select_target_file() -> Result<PathBuf, String> {
+pub(crate) fn select_target_file() -> Result<PathBuf, String> {
     let files = available_files();
     if files.len() == 1 {
         return Ok(files[0].clone());
@@ -238,7 +238,7 @@ fn sort_snippets(snippets: &mut [Snippet]) {
     });
 }
 
-pub fn filter_snippets(query: &str, all_os: bool) -> Result<Option<Vec<(usize, Snippet)>>, String> {
+pub(crate) fn filter_snippets(query: &str, all_os: bool) -> Result<Option<Vec<(usize, Snippet)>>, String> {
     let current_os = crate::utils::os_detect::detect_os();
     let snippets = load_snippets();
 

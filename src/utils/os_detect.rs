@@ -26,7 +26,7 @@ fn detect_linux_distro() -> Os {
     detect_os_from_os_release(&content)
 }
 
-pub fn detect_os() -> Os {
+pub(crate) fn detect_os() -> Os {
     match std::env::consts::OS {
         "macos" => Os::Macos,
         "windows" => Os::Windows,

@@ -67,7 +67,7 @@ fn get_shell_history() -> Result<Vec<String>, String> {
     Ok(unique)
 }
 
-pub fn run() -> Result<(), String> {
+pub(crate) fn run() -> Result<(), String> {
     let current_os = os_detect::detect_os();
     let history = get_shell_history()?;
 

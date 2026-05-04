@@ -1,13 +1,14 @@
 use crate::snippet::{Os, Snippet};
+use crate::selector;
 use crate::storage;
 use crate::utils::icons::{EMOJI_ADD, EMOJI_SUCCESS};
 use crate::utils::os_detect;
 use console::style;
-use dialoguer::{theme::ColorfulTheme, FuzzySelect, Input};
+use dialoguer::{theme::ColorfulTheme, Input};
 use std::path::PathBuf;
 use strum::IntoEnumIterator;
 
-pub fn run() -> Result<(), String> {
+pub(crate) fn run() -> Result<(), String> {
     println!(
         "{}",
         style(format!("{} Add new snippet", EMOJI_ADD))
@@ -42,13 +43,8 @@ pub fn run() -> Result<(), String> {
     let os_options: Vec<&str> = Os::iter().map(|o| o.into()).collect();
     let default_idx = Os::iter().position(|o| o == current_os).unwrap_or(0);
 
-    let os_idx = FuzzySelect::with_theme(&ColorfulTheme::default())
-        .with_prompt("OS")
-        .items(&os_options)
-        .default(default_idx)
-        .interact()
-        .map_err(|e| format!("Failed to read OS: {}", e))?;
-
+    let os_strings: Vec<String> = os_options.iter().map(|s| s.to_string()).collect();
+    let os_idx = selector::select_strings_with_dialoguer(&os_strings, "OS", default_idx).ok_or("No OS available")?;
     let os = Os::iter().nth(os_idx).ok_or("No OS available")?;
 
     let target = storage::select_target_file()?;

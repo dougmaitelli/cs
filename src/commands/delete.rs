@@ -5,7 +5,7 @@ use crate::utils::icons::{EMOJI_DELETE, EMOJI_SUCCESS};
 use console::style;
 use dialoguer::{theme::ColorfulTheme, Confirm};
 
-pub fn run(query: &str, all_os: bool) -> Result<(), String> {
+pub(crate) fn run(query: &str, all_os: bool) -> Result<(), String> {
     let filtered = storage::filter_snippets(query, all_os)?;
     if filtered.is_none() {
         return Ok(());
