@@ -4,7 +4,7 @@ use crate::storage;
 use crate::utils::icons::{EMOJI_ADD, EMOJI_EMPTY, EMOJI_SUCCESS};
 use crate::utils::os_detect;
 use console::style;
-use dialoguer::{theme::ColorfulTheme, Input};
+use dialoguer::{theme::ColorfulTheme, FuzzySelect, Input};
 use std::path::PathBuf;
 use strum::IntoEnumIterator;
 
@@ -119,7 +119,7 @@ pub fn run() -> Result<(), String> {
     let os_options: Vec<&str> = Os::iter().map(|o| o.into()).collect();
     let default_idx = Os::iter().position(|o| o == current_os).unwrap_or(0);
 
-    let os_idx = dialoguer::Select::with_theme(&ColorfulTheme::default())
+    let os_idx = FuzzySelect::with_theme(&ColorfulTheme::default())
         .with_prompt("OS")
         .items(&os_options)
         .default(default_idx)

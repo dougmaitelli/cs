@@ -1,14 +1,14 @@
 # cs — CLI Snippet Manager
 
+`cs` is a command-line snippet manager written in Rust. It stores shell commands and provides fast search, selection, and execution.
+
+[![cs demo](./demo.gif)](./demo.gif)
+
 ## Installation
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/dougmaitelli/cs/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/dougmaitelli/cs/refs/heads/master/install.sh | bash
 ```
-
-## Overview
-
-`cs` is a command-line snippet manager written in Rust. It stores shell commands and provides fast search, selection, and execution.
 
 ## Commands
 
