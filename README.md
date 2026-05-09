@@ -7,7 +7,7 @@
 ## Installation
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/dougmaitelli/cs/refs/heads/master/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/dougmaitelli/cs/master/install.sh | bash
 ```
 
 ## Commands
