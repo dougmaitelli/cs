@@ -116,10 +116,10 @@ fn run_cs_interactive(
         .join(",");
 
     let mut py = Command::new("python3")
-        .arg(&helper_path)
-        .arg(&cs_bin_path())
+        .arg(helper_path)
+        .arg(cs_bin_path())
         .arg(config_home.to_string_lossy().to_string())
-        .arg(&extra_env_str)
+        .arg(extra_env_str)
         .args(args)
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
@@ -137,9 +137,7 @@ fn run_cs_interactive(
         .write_all(serde_json::to_string(&input_data).unwrap().as_bytes())
         .expect("Failed to write keystrokes");
 
-    let output = py
-        .wait_with_output()
-        .expect("Failed to wait on pty_helper");
+    let output = py.wait_with_output().expect("Failed to wait on pty_helper");
 
     let stdout = String::from_utf8_lossy(&output.stdout);
     let stderr = String::from_utf8_lossy(&output.stderr);
@@ -164,7 +162,7 @@ fn run_cs_interactive(
 #[test]
 fn cs_help_displays_usage() {
     let (config_home, _) = setup_xdg_config();
-    
+
     let output = run_cs_with_config(config_home, &["--help"]);
     let stdout = String::from_utf8_lossy(&output.stdout);
 
@@ -394,9 +392,9 @@ fn cs_add_snippet_to_empty_snippets() {
     let keystrokes = vec![
         b"echo hello world\r".to_vec(),
         b"print hello\r".to_vec(),
-        b"\r".to_vec(),       // empty tags
-        b"l".to_vec(),        // fuzzy filter OS to "linux"
-        b"\r".to_vec(),       // confirm "linux"
+        b"\r".to_vec(), // empty tags
+        b"l".to_vec(),  // fuzzy filter OS to "linux"
+        b"\r".to_vec(), // confirm "linux"
     ];
 
     let (exit_code, output) = run_cs_interactive(
@@ -435,8 +433,8 @@ os = "linux"
         b"echo new command\r".to_vec(),
         b"new description\r".to_vec(),
         b"newtag\r".to_vec(),
-        b"m".to_vec(),        // fuzzy filter OS to "macos"
-        b"\r".to_vec(),       // confirm "macos"
+        b"m".to_vec(),  // fuzzy filter OS to "macos"
+        b"\r".to_vec(), // confirm "macos"
     ];
 
     let (exit_code, output) = run_cs_interactive(
@@ -478,11 +476,11 @@ includes = ["extra.toml"]
     let keystrokes = vec![
         b"echo in extra\r".to_vec(),
         b"extra snippet\r".to_vec(),
-        b"\r".to_vec(),       // empty tags
-        b"a".to_vec(),        // fuzzy filter OS to "any"
-        b"\r".to_vec(),       // confirm "any"
-        b"\x1b[B".to_vec(),   // down arrow to select extra.toml
-        b"\r".to_vec(),       // confirm extra.toml
+        b"\r".to_vec(),     // empty tags
+        b"a".to_vec(),      // fuzzy filter OS to "any"
+        b"\r".to_vec(),     // confirm "any"
+        b"\x1b[B".to_vec(), // down arrow to select extra.toml
+        b"\r".to_vec(),     // confirm extra.toml
     ];
 
     let (exit_code, output) = run_cs_interactive(
@@ -526,8 +524,8 @@ os = "any"
 
     // Select the snippet (Enter) and then decline with n
     let keystrokes = vec![
-        b"\r".to_vec(),       // select first snippet
-        b"n".to_vec(),        // n = no, decline deletion
+        b"\r".to_vec(), // select first snippet
+        b"n".to_vec(),  // n = no, decline deletion
     ];
 
     let (_exit_code, output) = run_cs_interactive(
@@ -562,9 +560,9 @@ os = "any"
 
     // Select the snippet (Enter) and confirm with y
     let keystrokes = vec![
-        b"\r".to_vec(),       // select first snippet
-        b"y".to_vec(),        // confirm deletion
-        b"\r".to_vec(),       // confirm with Enter
+        b"\r".to_vec(), // select first snippet
+        b"y".to_vec(),  // confirm deletion
+        b"\r".to_vec(), // confirm with Enter
     ];
 
     let (exit_code, output) = run_cs_interactive(
@@ -606,10 +604,10 @@ os = "any"
 
     // Select the second snippet (down arrow + Enter) and confirm
     let keystrokes = vec![
-        b"\x1b[B".to_vec(),  // down arrow to select second snippet
-        b"\r".to_vec(),       // confirm selection
-        b"y".to_vec(),        // confirm deletion
-        b"\r".to_vec(),       // confirm with Enter
+        b"\x1b[B".to_vec(), // down arrow to select second snippet
+        b"\r".to_vec(),     // confirm selection
+        b"y".to_vec(),      // confirm deletion
+        b"\r".to_vec(),     // confirm with Enter
     ];
 
     let (_exit_code, output) = run_cs_interactive(
@@ -655,7 +653,7 @@ fn cs_import_selection_cancelled() {
 
     // Press ESC to cancel the history selection
     let keystrokes = vec![
-        b"\x1b".to_vec(),     // ESC to cancel selection
+        b"\x1b".to_vec(), // ESC to cancel selection
     ];
 
     let (_exit_code, output) = run_cs_interactive(
@@ -692,12 +690,12 @@ fn cs_import_from_history_entry() {
     // The first item shown in the selector will be "echo old command 3"
 
     let keystrokes = vec![
-        b"\x1b[B".to_vec(),  // down arrow to select 2nd entry: "echo command to import"
-        b"\r".to_vec(),       // confirm selection
+        b"\x1b[B".to_vec(), // down arrow to select 2nd entry: "echo command to import"
+        b"\r".to_vec(),     // confirm selection
         b"imported from history\r".to_vec(),
-        b"\r".to_vec(),       // empty tags
-        b"i".to_vec(),        // fuzzy filter OS to "any"
-        b"\r".to_vec(),       // confirm "any"
+        b"\r".to_vec(), // empty tags
+        b"i".to_vec(),  // fuzzy filter OS to "any"
+        b"\r".to_vec(), // confirm "any"
     ];
 
     let (exit_code, output) = run_cs_interactive(
