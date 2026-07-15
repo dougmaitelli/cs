@@ -14,6 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: orhun/git-cliff-action@v4
+        id: cliff
+        with:
+          config: cliff.toml
+          args: --current --strip header
 
       - name: Create GitHub Release
         env:
@@ -22,7 +30,7 @@ jobs:
           TAG_NAME="${GITHUB_REF#refs/tags/}"
           gh release create "$TAG_NAME" \
             --title "$TAG_NAME" \
-            --generate-notes
+            --notes "${{ steps.cliff.outputs.content }}"
 
   build:
     name: Build release binary (${{ matrix.target }})
