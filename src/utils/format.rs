@@ -98,7 +98,7 @@ pub(crate) fn print_snippet(snippet: &Snippet) {
     println!(
         "   {}  {}",
         style("Description:").dim(),
-        &snippet.description
+        snippet.description
     );
     println!(
         "   {}  {}",
