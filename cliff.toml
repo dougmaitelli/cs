@@ -11,17 +11,35 @@ body = """
 trim = true
 
 [git]
-conventional_commits = false
+# Parse Conventional Commit types while retaining useful legacy commit subjects.
+conventional_commits = true
 filter_unconventional = false
 split_commits = false
+protect_breaking_commits = true
 
 commit_parsers = [
-  { message = "^[Ff]ix|^[Bb]ug|^[Pp]atch", group = "🐛 Bug Fixes" },
-  { message = "^[Aa]dd|^[Ii]mplement|^[Ii]ntroduce|^[Nn]ew", group = "🚀 Features" },
-  { message = "^[Uu]pdate|^[Ii]mprove|^[Ee]nhance|^[Cc]hange", group = "✨ Improvements" },
-  { message = "^[Rr]efactor|^[Cc]lean|^[Rr]emove|^[Dd]elete", group = "🔧 Chores" },
-  { message = ".*", group = "🔄 Other Changes" },
+  # Keep internal-only and automated changes out of user-facing release notes.
+  { message = "(?i)^merge (pull request|branch)", skip = true },
+  { message = "(?i)^(test|style|ci|build|chore)(\\([^)]*\\))?!?:", skip = true },
+  { message = "(?i)^bump ", skip = true },
+
+  # Conventional Commits, with optional scopes and breaking-change markers.
+  { message = "(?i)^security(\\([^)]*\\))?!?:", group = "<!-- 0 -->🔒 Security" },
+  { message = "(?i)^feat(\\([^)]*\\))?!?:", group = "<!-- 1 -->🚀 Features" },
+  { message = "(?i)^fix(\\([^)]*\\))?!?:", group = "<!-- 2 -->🐛 Bug Fixes" },
+  { message = "(?i)^perf(\\([^)]*\\))?!?:", group = "<!-- 3 -->⚡ Performance" },
+  { message = "(?i)^(refactor|docs)(\\([^)]*\\))?!?:", group = "<!-- 4 -->✨ Improvements" },
+
+  # Classify older, non-conventional subjects already present in the history.
+  { message = "(?i)^(add|implement|introduce|new)\\b", group = "<!-- 1 -->🚀 Features" },
+  { message = "(?i)^(fix|bug|patch)\\b", group = "<!-- 2 -->🐛 Bug Fixes" },
+  { message = "(?i)^(update|upgrade|improve|enhance|change|refactor|clean|remove|delete)\\b", group = "<!-- 4 -->✨ Improvements" },
+  { message = ".*", group = "<!-- 5 -->🔄 Other Changes" },
 ]
 
 filter_commits = false
 tag_pattern = "v[0-9].*"
+
+[remote.github]
+owner = "dougmaitelli"
+repo = "cs"
