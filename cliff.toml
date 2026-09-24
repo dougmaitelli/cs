@@ -18,10 +18,13 @@ split_commits = false
 protect_breaking_commits = true
 
 commit_parsers = [
+  # Show dependency updates last, before the broader internal-change filters apply.
+  { message = "(?i)^(build|chore)\\(deps(-dev)?\\)!?:", group = "<!-- 6 -->📦 Dependencies" },
+  { message = "(?i)^bump ", group = "<!-- 6 -->📦 Dependencies" },
+
   # Keep internal-only and automated changes out of user-facing release notes.
   { message = "(?i)^merge (pull request|branch)", skip = true },
   { message = "(?i)^(test|style|ci|build|chore)(\\([^)]*\\))?!?:", skip = true },
-  { message = "(?i)^bump ", skip = true },
 
   # Conventional Commits, with optional scopes and breaking-change markers.
   { message = "(?i)^security(\\([^)]*\\))?!?:", group = "<!-- 0 -->🔒 Security" },
