@@ -61,6 +61,10 @@ jobs:
           toolchain: stable
           target: ${{ matrix.target }}
 
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: release-${{ matrix.target }}
+
       - name: Build release binary
         env:
           VERSION: ${{ github.ref_name }}
@@ -93,6 +97,10 @@ jobs:
         with:
           tool: cross
 
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: release-aarch64-unknown-linux-gnu
+
       - name: Build release binary
         env:
           VERSION: ${{ github.ref_name }}
@@ -112,6 +120,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+
+      - uses: Swatinem/rust-cache@v2
 
       - name: Build release binary
         run: cargo build --release
