@@ -8,8 +8,20 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
+  validate:
+    name: Validate release
+    permissions:
+      contents: read
+      pull-requests: read
+    uses: ./.github/workflows/ci.yml
+
   create-release:
+    needs: validate
     name: Create Release
     runs-on: ubuntu-latest
     steps:

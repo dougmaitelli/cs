@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [main, master]
+  workflow_call:
   pull_request:
     branches: [main, master]
 
@@ -12,8 +13,38 @@ permissions:
 env:
   CARGO_TERM_COLOR: always
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref_type != 'tag' }}
+
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      app: ${{ github.ref_type == 'tag' || steps.filter.outputs.app == 'true' }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: dorny/paths-filter@v4
+        id: filter
+        if: github.ref_type != 'tag'
+        with:
+          predicate-quantifier: every
+          filters: |
+            app:
+              - '**'
+              - '!docs/**'
+              - '!screenshots/**'
+              - '!*.md'
+              - '!LICENSE'
+
   lint:
+    needs: changes
+    if: needs.changes.outputs.app == 'true'
     name: Lint & Format
     runs-on: ubuntu-latest
     steps:
@@ -34,6 +65,8 @@ jobs:
         run: cargo clippy --all-targets -- -D warnings
 
   test:
+    needs: changes
+    if: needs.changes.outputs.app == 'true'
     name: Test
     runs-on: ubuntu-latest
     steps:
@@ -48,3 +81,14 @@ jobs:
 
       - name: Run tests
         run: cargo test --all-targets
+
+  ci-result:
+    name: CI result
+    if: always()
+    needs: [changes, lint, test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require selected checks to pass
+        env:
+          FAILED: ${{ needs.changes.result != 'success' || contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        run: test "$FAILED" = false
